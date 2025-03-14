@@ -41,11 +41,11 @@ Using data from the **[National Snow and Ice Data Center (NSIDC)](https://noaada
 
 ## 🔥 Results & Visualizations
 ### **📌 Overall Sea Ice Decline**
-![Overall Sea Ice Trend](figures/eda_time_series_overall_improved.png)
+![Overall Sea Ice Trend](figures/eda_time_series_overall_improved.pdf)
 📌 The figure above shows a significant **downward shift in sea ice extent after 2000**, highlighting the increasing impact of climate change.
 
 ### **📌 Regional Variability in Sea Ice Extent**
-![Regional Sea Ice Trend](figures/eda_time_series_facets_logY.png)
+![Regional Sea Ice Trend](figures/eda_time_series_facets_logY.pdf)
 📌 Different Arctic regions exhibit unique trends. Some show **gradual decline**, while others remain relatively stable.
 
 ### **📌 Model Comparison: Leave-One-Out Cross-Validation (LOO)**

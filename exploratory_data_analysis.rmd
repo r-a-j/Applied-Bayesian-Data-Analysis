@@ -8,7 +8,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 # Load Libraries
 library(data.table)
@@ -20,6 +20,13 @@ library(reshape2)
 
 ### **1. Load and Prepare Data**
 ```{r load-data}
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
+# Ensure the 'figures' directory exists
+if (!dir.exists("figures")) {
+  dir.create("figures")
+}
+
 # Load the dataset
 data_path <- "combined_sea_ice_area_extent.csv"
 df <- fread(data_path)
@@ -49,23 +56,23 @@ summary(df$LogValue)
 
 # Summary by Region
 region_summary <- df[, .(
-  mean_value = mean(Value, na.rm=TRUE),
-  sd_value   = sd(Value, na.rm=TRUE),
-  min_value  = min(Value, na.rm=TRUE),
-  max_value  = max(Value, na.rm=TRUE),
+  mean_value = mean(Value, na.rm = TRUE),
+  sd_value   = sd(Value, na.rm = TRUE),
+  min_value  = min(Value, na.rm = TRUE),
+  max_value  = max(Value, na.rm = TRUE),
   count      = .N
-), by=Region]
+), by = Region]
 
 knitr::kable(region_summary, caption = "Summary of Sea Ice Extent by Region")
 
 # Summary by Year
 year_summary <- df[, .(
-  mean_value = mean(Value, na.rm=TRUE),
-  sd_value   = sd(Value, na.rm=TRUE),
-  min_value  = min(Value, na.rm=TRUE),
-  max_value  = max(Value, na.rm=TRUE),
+  mean_value = mean(Value, na.rm = TRUE),
+  sd_value   = sd(Value, na.rm = TRUE),
+  min_value  = min(Value, na.rm = TRUE),
+  max_value  = max(Value, na.rm = TRUE),
   count      = .N
-), by=Year][order(Year)]
+), by = Year][order(Year)]
 
 knitr::kable(year_summary, caption = "Summary of Sea Ice Extent by Year")
 ```
@@ -73,77 +80,133 @@ knitr::kable(year_summary, caption = "Summary of Sea Ice Extent by Year")
 ### **3. Data Visualizations**
 #### **3.1 Histogram of Sea Ice Extent**
 ```{r histogram-value}
-ggplot(df, aes(x = Value)) +
-  geom_histogram(bins=30, color="black", fill="gray") +
+p_val_hist <- ggplot(df, aes(x = Value)) +
+  geom_histogram(bins = 30, color = "black", fill = "gray") +
   theme_minimal() +
   ggtitle("Histogram of Sea Ice Extent") +
   xlab("Sea Ice Extent (km²)") +
   ylab("Frequency") +
-  scale_x_log10() + 
-  annotate("text", x=1e5, y=150, label="Skewed distribution", color="red", size=4)
+  scale_x_log10() +
+  annotate("text", x = 1e5, y = 150, label = "Skewed distribution", color = "red", size = 4)
+
+ggsave("figures/eda_hist_value_logX.pdf",
+  p_val_hist,
+  width = 7,
+  height = 5
+)
 ```
 
 #### **3.2 Histogram of Log(Sea Ice Extent)**
 ```{r histogram-logvalue}
-ggplot(df, aes(x = LogValue)) +
-  geom_histogram(bins=30, color="black", fill="gray") +
+p_logval_hist <- ggplot(df, aes(x = LogValue)) +
+  geom_histogram(bins = 30, color = "black", fill = "gray") +
   theme_minimal() +
   ggtitle("Histogram of Log(Sea Ice Extent)") +
   xlab("Log(Sea Ice Extent)") +
   ylab("Frequency") +
-  annotate("text", x=12, y=150, label="Peak around 13–14", color="red", size=4)
+  annotate("text", x = 12, y = 150, label = "Peak around 13–14", color = "red", size = 4)
+
+ggsave("figures/eda_hist_logvalue_improved.pdf",
+  p_logval_hist,
+  width = 7,
+  height = 5
+)
 ```
 
 #### **3.3 Boxplot of Sea Ice Extent by Region**
 ```{r boxplot-region}
-region_order <- df[, .(med = median(Value)), by=Region][order(med)]$Region
-df[, Region := factor(Region, levels=region_order)]
+region_order <- df[, .(med = median(Value)), by = Region][order(med)]$Region
+df[, Region := factor(Region, levels = region_order)]
 
-ggplot(df, aes(x = Region, y = Value)) +
+p_val_box <- ggplot(df, aes(x = Region, y = Value)) +
   geom_boxplot() +
   coord_flip() +
   theme_minimal() +
   ggtitle("Sea Ice Extent by Region") +
-  xlab("Region") + ylab("Sea Ice Extent (km²)")
+  xlab("Region") +
+  ylab("Sea Ice Extent (km²)")
+
+ggsave("figures/eda_box_value_by_region_ordered.pdf",
+  p_val_box,
+  width = 7,
+  height = 6
+)
 ```
 
 ### **4. Time-Series Trends**
 #### **4.1 Sea Ice Extent Over Time by Region**
 ```{r timeseries-region}
-ggplot(df, aes(x = Year, y = Value, group=Region)) +
+p_time_region <- ggplot(df, aes(x = Year, y = Value, group = Region)) +
   geom_line() +
-  facet_wrap(~ Region, scales="free_x", ncol=4) +
+  facet_wrap(~Region, scales = "free_x", ncol = 4) +
   scale_y_log10() +
   theme_minimal() +
   ggtitle("Sea Ice Extent Over Time by Region (Log Scale)") +
-  xlab("Year") + ylab("Sea Ice Extent (Log Scale)")
+  xlab("Year") +
+  ylab("Sea Ice Extent (Log Scale)")
+
+ggsave("figures/eda_time_series_facets_logY.pdf",
+  p_time_region,
+  width = 10,
+  height = 8
+)
+
+ggsave("figures/eda_time_series_facets_logY.png",
+  p_time_region,
+  width = 10,
+  height = 8,
+  dpi = 1200
+)
 ```
 
 #### **4.2 Overall Mean Sea Ice Extent Over Time**
 ```{r timeseries-overall}
-df_overall <- df[, .(Value = mean(Value, na.rm=TRUE)), by=Year][order(Year)]
+df_overall <- df[, .(Value = mean(Value, na.rm = TRUE)), by = Year][order(Year)]
 
-ggplot(df_overall, aes(x = Year, y = Value)) +
-  geom_line(size=1, color="blue") +
-  geom_point(color="red") +
+p_time_overall <- ggplot(df_overall, aes(x = Year, y = Value)) +
+  geom_line(size = 1, color = "blue") +
+  geom_point(color = "red") +
   theme_minimal() +
   ggtitle("Overall Mean Sea Ice Extent Over Time") +
-  xlab("Year") + ylab("Mean Sea Ice Extent (km²)") +
-  annotate("text", x=1985, y=min(df_overall$Value)+5e4,
-           label="Downward shift visible after 2000", color="darkgreen", size=4)
+  xlab("Year") +
+  ylab("Mean Sea Ice Extent (km²)") +
+  annotate("text",
+    x = 1985, y = min(df_overall$Value) + 5e4,
+    label = "Downward shift visible after 2000", color = "darkgreen", size = 4
+  )
+
+ggsave("figures/eda_time_series_overall_improved.pdf",
+  p_time_overall,
+  width = 7,
+  height = 5
+)
+
+ggsave("figures/eda_time_series_overall_improved.png",
+  p_time_overall,
+  width = 7,
+  height = 5,
+  dpi = 1200
+)
 ```
 
 ### **5. Correlation Between Regions**
 ```{r correlation-matrix}
-df_wide <- dcast(df, Year ~ Region, value.var="Value")
-cor_mat <- cor(df_wide[, -1], use="pairwise.complete.obs")
+df_wide <- dcast(df, Year ~ Region, value.var = "Value")
+cor_mat <- cor(df_wide[, -1], use = "pairwise.complete.obs")
 melted_cor <- melt(cor_mat)
 
-ggplot(melted_cor, aes(x=Var1, y=Var2, fill=value)) +
-  geom_tile(color="white") +
-  scale_fill_gradient2(low="blue", mid="white", high="red", midpoint=0, limits=c(-1,1)) +
+p_cor <- ggplot(melted_cor, aes(x = Var1, y = Var2, fill = value)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0, limits = c(-1, 1)) +
   theme_minimal() +
   ggtitle("Correlation Matrix of Sea Ice Extent Across Regions") +
-  xlab("") + ylab("") +
-  theme(axis.text.x = element_text(angle=45, hjust=1))
+  xlab("") +
+  ylab("") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave("figures/eda_corr_regions_improved.pdf",
+  p_cor,
+  width = 6,
+  height = 5
+)
 ```

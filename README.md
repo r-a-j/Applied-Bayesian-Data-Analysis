@@ -2,10 +2,10 @@
 
 ## 🌍 Overview
 This project investigates the temporal and regional variability of **Arctic sea ice extent** using **Bayesian hierarchical modeling**. We compare two models:
-1. A **non-autocorrelated model (No-AR)** that assumes independent residuals.
-2. An **autoregressive model (AR(1))**, which captures temporal dependence in residuals.
+1. A **Bayesian Hierarchical Non-Autoregressive model (No-AR)** that assumes independent residuals.
+2. An **Bayesian Hierarchical Autoregressive model (AR(1))**, which captures temporal dependence in residuals.
 
-Using data from the **National Snow and Ice Data Center (NSIDC)**, we assess whether accounting for temporal correlation improves predictive performance. The findings provide insights into the declining trends in sea ice extent and highlight key regional differences.
+Using data from the **[National Snow and Ice Data Center (NSIDC)](https://noaadata.apps.nsidc.org/NOAA/G02135/north/)**, we assess whether accounting for temporal correlation improves predictive performance. The findings provide insights into the declining trends in sea ice extent and highlight key regional differences.
 
 ---
 
@@ -23,12 +23,12 @@ Using data from the **National Snow and Ice Data Center (NSIDC)**, we assess whe
 - **Exploratory Analysis**: Distribution analysis, time series trends, regional comparisons
 
 ### **2️⃣ Bayesian Hierarchical Models**
-#### **📌 Model 1: Non-Autoregressive (No-AR)**
+#### **📌 Model 1: Bayesian Hierarchical Non-Autoregressive (No-AR)**
 - Hierarchical model with region-specific intercepts
 - Assumes independent residuals across time
 - Captures inter-regional differences but ignores temporal dependencies
 
-#### **📌 Model 2: Autoregressive AR(1)**
+#### **📌 Model 2: Bayesian Hierarchical Autoregressive AR(1)**
 - Extends No-AR by introducing an **AR(1) structure** in residuals
 - Models year-to-year correlation, accounting for persistence in sea ice dynamics
 

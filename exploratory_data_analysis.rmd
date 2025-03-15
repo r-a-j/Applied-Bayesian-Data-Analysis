@@ -137,23 +137,31 @@ ggsave("figures/eda_box_value_by_region_ordered.pdf",
 #### **4.1 Sea Ice Extent Over Time by Region**
 ```{r timeseries-region}
 p_time_region <- ggplot(df, aes(x = Year, y = Value, group = Region)) +
-  geom_line() +
+  geom_line(size = 1.2) +
   facet_wrap(~Region, scales = "free_x", ncol = 4) +
   scale_y_log10() +
   theme_minimal() +
   ggtitle("Sea Ice Extent Over Time by Region (Log Scale)") +
   xlab("Year") +
-  ylab("Sea Ice Extent (Log Scale)")
+  ylab("Sea Ice Extent (Log Scale)") +
+  theme(
+    plot.title = element_text(size = 20, face = "bold"),
+    axis.title.x = element_text(size = 18, face = "bold"),
+    axis.title.y = element_text(size = 18, face = "bold"),
+    axis.text.x = element_text(size = 14),
+    axis.text.y = element_text(size = 14),
+    strip.text = element_text(size = 16, face = "bold")
+  )
 
 ggsave("figures/eda_time_series_facets_logY.pdf",
   p_time_region,
-  width = 10,
+  width = 12,
   height = 8
 )
 
 ggsave("figures/eda_time_series_facets_logY.png",
   p_time_region,
-  width = 10,
+  width = 12,
   height = 8,
   dpi = 300
 )
@@ -164,15 +172,22 @@ ggsave("figures/eda_time_series_facets_logY.png",
 df_overall <- df[, .(Value = mean(Value, na.rm = TRUE)), by = Year][order(Year)]
 
 p_time_overall <- ggplot(df_overall, aes(x = Year, y = Value)) +
-  geom_line(size = 1, color = "blue") +
-  geom_point(color = "red") +
+  geom_line(size = 1.5, color = "blue") +  # Thicker line
+  geom_point(color = "red", size = 3) +  # Bigger points
   theme_minimal() +
   ggtitle("Overall Mean Sea Ice Extent Over Time") +
   xlab("Year") +
   ylab("Mean Sea Ice Extent (km²)") +
   annotate("text",
     x = 1985, y = min(df_overall$Value) + 5e4,
-    label = "Downward shift visible after 2000", color = "darkgreen", size = 4
+    label = "Downward shift visible after 2000", color = "darkgreen", size = 5
+  ) +
+  theme(
+    plot.title = element_text(size = 20, face = "bold"),
+    axis.title.x = element_text(size = 18, face = "bold"),
+    axis.title.y = element_text(size = 18, face = "bold"),
+    axis.text.x = element_text(size = 14),
+    axis.text.y = element_text(size = 14)
   )
 
 ggsave("figures/eda_time_series_overall_improved.pdf",
@@ -197,7 +212,13 @@ melted_cor <- melt(cor_mat)
 
 p_cor <- ggplot(melted_cor, aes(x = Var1, y = Var2, fill = value)) +
   geom_tile(color = "white") +
-  scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0, limits = c(-1, 1)) +
+  scale_fill_gradient2(
+    low = "blue",
+    mid = "white",
+    high = "red",
+    midpoint = 0,
+    limits = c(-1, 1)
+  ) +
   theme_minimal() +
   ggtitle("Correlation Matrix of Sea Ice Extent Across Regions") +
   xlab("") +

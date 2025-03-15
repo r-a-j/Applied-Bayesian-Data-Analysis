@@ -155,7 +155,7 @@ ggsave("figures/eda_time_series_facets_logY.png",
   p_time_region,
   width = 10,
   height = 8,
-  dpi = 1200
+  dpi = 300
 )
 ```
 
@@ -177,15 +177,15 @@ p_time_overall <- ggplot(df_overall, aes(x = Year, y = Value)) +
 
 ggsave("figures/eda_time_series_overall_improved.pdf",
   p_time_overall,
-  width = 7,
-  height = 5
+  width = 10,
+  height = 8
 )
 
 ggsave("figures/eda_time_series_overall_improved.png",
   p_time_overall,
-  width = 7,
-  height = 5,
-  dpi = 1200
+  width = 10,
+  height = 8,
+  dpi = 300
 )
 ```
 
